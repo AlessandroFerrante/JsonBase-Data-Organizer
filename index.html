@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="theme-color" content="#0f0f0f"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JsonBase - Data Organizer</title>
+    <meta name="description" content="Alessandro Ferrante, JsonBase  allows you to create, modify, and manage registers with dynamic columns and records. You can also import and export registers as JSON files.">
+    <meta name="author" content="Alessandro Ferrante">
+    <meta name="keywords" content="Ferrante, Alessandro, ferrante alessandro, alessandro ferrante, gestione dati, json,data management, registry, JsonBase, data, Organizer, record, import json, json viwer">
+    <meta content="data management, gestione dati, registry, json" name="keywords">
+    <link rel="icon" href="assets/images/LogoAzure.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/LogoAzure.ico">
+    <link type="text/css" href="assets/css/style.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://ka-f.fontawesome.com" crossorigin="">
+    <link rel="canonical" href="https://alessandroferrante.github.io/JsonBase-DataOrganizer/"/>
+    <meta name="MobileOptimized" content="width">
+    <meta name="HandheldFriendly" content="true">
+    <script src="https://kit.fontawesome.com/a726a595d5.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="total">
+        <div class="topnav">
+
+            <a href="https://alessandroferrante.net">
+                <div class="logonav"></div>
+            </a>
+            <h1>JsonBase - Data Organizer </h1> 
+           <div class="info" id="info"></div>
+        </div>
+        <div class="container">          
+            <div class="first">
+                <div class="background-shape"></div>
+                <div class="background-shape"></div>
+                <div class="background-shape"></div>
+
+                <div class="button-panel">
+                    <h3>Registry</h3>
+                    <div class="registry"> 
+                    <label for="registrySelect">Select Registry:</label>
+                        <select id="registrySelect"></select>
+                    </div>
+                
+                    <form id="newRegistry">
+                        <input type="text" name="newRegistryInput" placeholder="Enter new registry name" id="newRegistryInput" required>
+                        <button type="submit" id="newRegistryButton">Create new registry</button>
+                    </form>
+                    
+                    <button id="deleteRegistryButton">Delete current registry</button>
+                
+                    <button id="exportAllButton">Export all registries</button>
+                    <button id="exportButton">Export current registry</button>
+                    <div>
+                        <label for="importAllFile">Import multiple registries</label>
+                        <input type="file" id="importAllFile" accept=".json" />    
+                    </div>
+                    
+                    <div>
+                        <label for="importFile">Import one registry</label>
+                        <input type="file" id="importFile" accept=".json">        
+                    </div>
+                </div>
+                
+                <div class="createTable">
+                    <h3>Add record</h3>
+                    <div id="addColumnContainer">
+                        <input type="text" id="newColumnName" placeholder="Column name" required>
+                        <label for="newColumnType"></label>
+                            <select id="newColumnType">
+                                <option value="text">Testo</option>
+                                <option value="number">Numero</option>
+                                <option value="date">Data</option>
+                                <option value="email">Email</option>
+                                <option value="tel">Telefono</option>
+                                <option value="url">URL</option>
+                                <option value="checkbox">Checkbox</option>
+                                <option value="range">Intervallo</option>
+                                <option value="color">Colore</option>
+                                <option value="time">Tempo</option>
+                                <option value="month">Mese</option>
+                                <option value="week">Settimana</option>
+                                <option value="hidden">Nascosto</option>
+                                <option value="file">File</option>
+                                <option value="search">Cerca</option>
+                                <option value="datetime-local">Data e ora</option>
+                                <option value="password">Password</option>
+                                <option value="file">File</option>
+                                <option value="image">Immagine</option>
+                            </select>
+                         <button id="addColumnButton">Aggiungi Colonna</button>
+                    </div>   
+                    <form id="tableForm">
+                        <input type="number" id="numColumns" placeholder="Number of columns" required min="1" >
+                        <button type="submit" id="createColumnsButton">Crea Colonne</button>
+                    </form>
+                    
+                    <div id="tableArea"></div>
+                    
+                    <form id="noteForm"  onsubmit="handleSubmit(event)">
+                        <div id="tableInputs"></div>
+                        <p id="recordCounter">Record counter : 0</p>
+                        <button type="submit" id="createTableButton" name="action" value="createTableButton" ~le="display: none;">Crea Tabella</button>
+                        <button type="submit" id="addRecordButton" name="action" value="addRecordButton" style="display: none;">Aggiungi Record</button>
+                    </form>
+                </div>
+    
+                <div class="usedStorage">
+                    <p id="progressText">Remaining space: 100%</p>
+                    <p id="MBstorage"></p>
+                    <progress id="progressBar" max="100" value="0"></progress>
+                </div>    
+            </div>
+            
+            <div id="deleteRegistryModal" class="modal">
+                <div class="modal-content" style="  color: red">
+                    <h3>Delete the current register?</h3>
+                    <button id="confirmDeleteRegistryButton" class="btn">OK</button>
+                    <button id="cancelDeleteRegistryButton" class="btn">Cancel</button>
+                </div>
+            </div>
+            <div id="modal" class="modal">
+                <div class="modal-content" style="  color: green">
+                    <h3>Record edit</h3>
+                    <form id="modalForm"></form>
+                    <button id="saveChanges" class="btn">OK</button>
+                    <button id="cancelChanges" class="btn">Cancel</button>
+                </div>
+            </div>
+            <div id="deleteConfirmationModal" class="modal" style="display: none;">
+                <div class="modal-content" style="  color: red;">
+                    <p>Are you sure you want to eliminate this line?</p>
+                    <button id="confirmDeleteButton">OK</button>
+                    <button id="cancelDeleteButton">Cancel</button>
+                </div>
+            </div>
+            <!-- Modal for info -->
+            <div id="infoModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeInfoButton" class="close" style="cursor: pointer; color: red;" ><i class="fa-regular fa-circle-xmark" style="color: #ff0000; font-size: 20px;"></i></span>
+                    <h2>How JsonBase Works</h2>
+                    <p>JsonBase allows you to create, modify, and manage registers with dynamic columns and records. You can also import and export registers as JSON files.</p>
+                    <h3>JSON File Structure</h3>
+                    <p>The JSON files used by this application should have the following structure:</p>
+<pre class="preJson" style="font-family: monospace; background-color: #000000a1; padding: 25px; width: min-content; border-radius: 25px; color: #9d9d9d;"><p class="preJsonFile">.json</p>{
+    "columns": {
+        "names": ["column1", "column2", ...],
+        "types": ["text", "number", ...]
+    },
+    "records": [
+        {
+            "column1": "value1",
+            "column2": "value2",
+            ...
+        },
+        ...
+    ]
+}</pre>
+                    <p>Each register consists of columns and records:</p>
+                    <ul>
+                        <li><strong>columns.names:</strong> An array of column names.</li>
+                        <li><strong>columns.types:</strong> An array of column types (e.g., text, number, date, etc.).</li>
+                        <li><strong>records:</strong> An array of objects, where each object represents a record with key-value pairs corresponding to the column names and their values.</li>
+                    </ul>
+                    <p>Ensure that the JSON file follows this structure to be correctly imported and used by the application.</p>
+                
+                </div>
+            </div>
+            <div class="listContainer">
+                <h3>Current registry</h2>
+                                    
+                <!-- Tabella per le note -->
+                <div class="table-wrapper">
+                    <div class="animationTable">
+                        <div class="background-shape"></div>
+                        <div class="background-shape"></div>
+                        <div class="background-shape"></div>
+                        <div class="background-shape"></div>
+                        <div class="background-shape"></div>
+                        <div class="background-shape"></div>
+                    </div>
+
+                    <table id="noteTable">
+                        <thead>
+                            <tr id="headerRow"></tr>
+                        </thead>
+                        <tbody id="noteList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Powered by <a href="https://alessandroferrante.net/" target="_blank">Alessandro Ferrante</a>. All rights reserved.</p>
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
